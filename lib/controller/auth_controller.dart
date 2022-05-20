@@ -1,12 +1,12 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:ems/views/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../views/bottom_nav_bar/bottom_bar_view.dart';
 import '../views/profile/add_profile.dart';
 import 'package:path/path.dart' as Path;
 
@@ -24,7 +24,7 @@ class AuthController extends GetxController {
       /// Login Success
 
       isLoading(false);
-      Get.to(() => HomeScreen());
+      Get.to(() => BottomBarView());
     }).catchError((e) {
       isLoading(false);
       Get.snackbar('Error', "$e");
@@ -83,7 +83,7 @@ class AuthController extends GetxController {
       isLoading(false);
 
       ///SuccessFull loged in
-      Get.to(() => HomeScreen());
+      Get.to(() => BottomBarView());
     }).catchError((e) {
       /// Error in getting Login
       isLoading(false);
@@ -127,7 +127,7 @@ class AuthController extends GetxController {
       'gender': gender
     }).then((value) {
       isProfileInformationLoading(false);
-      Get.offAll(()=> HomeScreen());
+      Get.offAll(()=> BottomBarView());
     });
 
   }

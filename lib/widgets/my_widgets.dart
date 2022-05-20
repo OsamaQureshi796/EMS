@@ -33,13 +33,14 @@ Widget textField({text,TextEditingController? controller,Function? validator,Tex
 
 Widget myTextField({text, String? icon, bool, TextEditingController? controller,Function? validator}) {
   return Container(
-    height: 42,
+    height: 45,
     child: TextFormField(
 
       validator: (input)=> validator!(input),
       obscureText: bool,
       controller: controller,
       decoration: InputDecoration(
+        contentPadding:EdgeInsets.only(top: 5),
         errorStyle: TextStyle(fontSize: 0),
         hintStyle: TextStyle(
           color: AppColors.genderTextColor,
@@ -224,8 +225,8 @@ Widget iconTitleContainer({
   return Container(
     // padding: EdgeInsets.only(left: 10),
     decoration: BoxDecoration(
-      // borderRadius: BorderRadius.circular(8),
-      // border: Border.all(width: 0.1, color: AppColors.genderTextColor),
+      borderRadius: BorderRadius.circular(8),
+      border: Border.all(width: 0.1, color: AppColors.genderTextColor),
     ),
     width: width,
     height: height,
@@ -258,10 +259,10 @@ Widget iconTitleContainer({
           color: AppColors.genderTextColor,
         ),
 
-        // border: isReadOnly
-        //     ? OutlineInputBorder(
-        //         borderSide: BorderSide(color: Color(0xffA6A6A6)),borderRadius: BorderRadius.circular(8))
-        //     : OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        border: isReadOnly
+            ? OutlineInputBorder(
+                borderSide: BorderSide(color: Color(0xffA6A6A6)),borderRadius: BorderRadius.circular(8))
+            : OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       ),
     ),
   );
