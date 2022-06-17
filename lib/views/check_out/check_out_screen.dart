@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ems/services/payment_service/payment_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -7,7 +9,10 @@ import '../../utils/app_color.dart';
 import '../../widgets/my_widgets.dart';
 
 class CheckOutView extends StatefulWidget {
-  CheckOutView({Key? key}) : super(key: key);
+  DocumentSnapshot? eventDoc;
+
+  CheckOutView(this.eventDoc);
+  
 
   @override
   State<CheckOutView> createState() => _CheckOutViewState();
@@ -32,6 +37,25 @@ class _CheckOutViewState extends State<CheckOutView> {
       lastDate: DateTime(2101),
     );
   }
+
+String eventImage = '';
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    
+ 
+    try{
+      List media = widget.eventDoc!.get('media') as List;
+      Map mediaItem = media.firstWhere((element) => element['isImage'] == true) as Map;
+      eventImage = mediaItem['url'];
+    }catch(e){
+      eventImage = '';
+    }
+
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +135,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                         ),
                         image: DecorationImage(
                           fit: BoxFit.cover,
-                          image: AssetImage('assets/Rectangle 23911.png'),
+                          image: NetworkImage(eventImage),
                         ),
                       ),
                     ),
@@ -125,7 +149,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                               // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 myText(
-                                  text: 'Yoga Weekend',
+                                  text: widget.eventDoc!.get('event_name'),
                                   style: TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w600,
@@ -163,7 +187,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                                 width: 5,
                               ),
                               myText(
-                                text: '1717 toomey Rd.Austin,XT 78704',
+                                text: widget.eventDoc!.get('location'),
                                 style: TextStyle(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w300,
@@ -175,7 +199,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                             height: 7,
                           ),
                           myText(
-                            text: 'Fri-sat-sun 10 AM - 7PM',
+                            text: widget.eventDoc!.get('date'),
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,
@@ -366,7 +390,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                   ),
                   Spacer(),
                   myText(
-                    text: '\$350',
+                    text: '\$${widget.eventDoc!.get('price')}',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
@@ -374,28 +398,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 10,
-              ),
-              Row(
-                children: [
-                  myText(
-                    text: 'Total Ticket',
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  Spacer(),
-                  myText(
-                    text: '02',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
+              
               Divider(),
               Row(
                 children: [
@@ -408,7 +411,7 @@ class _CheckOutViewState extends State<CheckOutView> {
                   ),
                   Spacer(),
                   myText(
-                    text: '\$700',
+                    text: '\$${int.parse(widget.eventDoc!.get('price')) + 2}',
                     style: TextStyle(
                       fontSize: 16,
                       color: AppColors.blue,
@@ -425,7 +428,14 @@ class _CheckOutViewState extends State<CheckOutView> {
                 height: 50,
                 width: double.infinity,
                 child: elevatedButton(
-                  onpress: () {},
+                  onpress: () {
+
+
+                    if(selectedRadio == 3){
+                      makePayment(context,amount: '${int.parse(widget.eventDoc!.get('price')) + 2}',eventId: widget.eventDoc!.id);
+                    }
+
+                  },
                   text: 'Book Now',
                 ),
               )

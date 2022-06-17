@@ -377,6 +377,29 @@ List eventSavedByUsers = [];
   }
 
   EventsIJoined() {
+
+
+    DataController dataController = Get.find<DataController>();
+
+    DocumentSnapshot myUser  = dataController.allUsers.firstWhere((e)=> e.id == FirebaseAuth.instance.currentUser!.uid);
+
+
+    String userImage = '';
+    String userName = '';
+
+    try{
+      userImage = myUser.get('image');
+    }catch(e){
+      userImage = '';
+    }
+
+    try{
+      userName = '${myUser.get('first')} ${myUser.get('last')}';
+    }catch(e){
+      userName = '';
+    }
+
+
     return Column(
       children: [
         Row(
@@ -423,14 +446,14 @@ List eventSavedByUsers = [];
               Row(
                 children: [
                   CircleAvatar(
-                    backgroundImage: AssetImage('assets/Ellipse 986.png'),
+                    backgroundImage: NetworkImage(userImage),
                     radius: 20,
                   ),
                   SizedBox(
                     width: 10,
                   ),
                   Text(
-                    "austinyogaworks",
+                    userName,
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -441,11 +464,30 @@ List eventSavedByUsers = [];
               Divider(
                 color: Color(0xff918F8F).withOpacity(0.2),
               ),
-              ListView.builder(
-                itemCount: austin.length,
+             Obx(()=> dataController.isEventsLoading.value? Center(child: CircularProgressIndicator(),) :  ListView.builder(
+                itemCount: dataController.joinedEvents.length,
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
                 itemBuilder: (context, i) {
+
+
+                    String name = dataController.joinedEvents[i].get('event_name');
+
+                    String date = dataController.joinedEvents[i].get('date');
+
+                    date = date.split('-')[0] + '-' + date.split('-')[1];
+
+
+
+                     List joinedUsers = [];
+
+    try{
+      joinedUsers = dataController.joinedEvents[i].get('joined');
+    }catch(e){
+      joinedUsers = [];
+    }
+
+
                   return Column(
                     children: [
                       Padding(
@@ -464,7 +506,7 @@ List eventSavedByUsers = [];
                                 ),
                               ),
                               child: Text(
-                                austin[i].rangeText!,
+                                date,
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.w500,
@@ -476,7 +518,7 @@ List eventSavedByUsers = [];
                               width: Get.width * 0.06,
                             ),
                             Text(
-                              austin[i].title!,
+                              name,
                               style: TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 16,
@@ -486,104 +528,45 @@ List eventSavedByUsers = [];
                           ],
                         ),
                       ),
-                      Container(
-                        margin: EdgeInsets.only(left: Get.width * 0.185),
-                        width: double.infinity,
-                        height: 50,
-                        child: ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            itemCount: imageList.length,
-                            itemBuilder: (context, i) {
-                              return Row(
-                                children: [
-                                  SizedBox(
-                                    width: Get.width * 0.01,
-                                  ),
-                                  CircleAvatar(
-                                    minRadius: 15,
-                                    maxRadius: 15,
-                                    backgroundImage: AssetImage(imageList[i]),
-                                  ),
-                                ],
-                              );
-                            }),
-                      )
+                      
+
+                        Container(
+                
+                width: Get.width*0.6,
+                height: 50,
+                child: ListView.builder(itemBuilder: (ctx,index){
+
+
+                    DocumentSnapshot user = dataController.allUsers.firstWhere((e)=> e.id == joinedUsers[index]);
+
+                    String image = '';
+
+                    try{
+                      image = user.get('image');
+                    }catch(e){
+                      image = '';
+                    }
+
+
+
+                return Container(
+                  margin: EdgeInsets.only(left: 10),
+                  child: CircleAvatar(
+                minRadius: 13,
+                backgroundImage: NetworkImage(image),
+              ),
+                );
+              },itemCount: joinedUsers.length,scrollDirection: Axis.horizontal,)
+              ),
+
+
                     ],
                   );
                 },
               ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: Get.width * 0.18,
-                  ),
-                  Container(
-                    height: 30,
-                    width: 30,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0xffD24698).withOpacity(0.02),
-                        )
-                      ],
-                    ),
-                    child: Image.asset('assets/heart.png'),
-                  ),
-                  SizedBox(
-                    width: 3,
-                  ),
-                  Text(
-                    '125',
-                    style: TextStyle(
-                      color: AppColors.black,
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 20,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(0.5),
-                    width: 17,
-                    height: 17,
-                    child: Image.asset(
-                      'assets/message.png',
-                      color: AppColors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  Text(
-                    '234',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.black,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 15,
-                  ),
-                  Container(
-                    padding: EdgeInsets.all(0.5),
-                    width: 16,
-                    height: 16,
-                    child: Image.asset(
-                      'assets/send.png',
-                      fit: BoxFit.contain,
-                      color: AppColors.black,
-                    ),
-                  ),
-                ],
-              ),
+             ),
+             
+            
             ],
           ),
         ),

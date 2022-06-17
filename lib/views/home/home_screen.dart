@@ -12,17 +12,8 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  
-  
 
-@override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-   
-
-  }
-
+  DataController dataController = Get.find<DataController>();
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   height: Get.height * 0.02,
                 ),
                 EventsFeed(),
-                EventsIJoined()
+                Obx(()=> dataController.isUsersLoading.value? Center(child: CircularProgressIndicator(),) : EventsIJoined())
               ],
             ),
           ),

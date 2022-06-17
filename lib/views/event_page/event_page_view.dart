@@ -365,7 +365,7 @@ int likes = 0;
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        Get.off(() => CheckOutView());
+                        Get.off(() => CheckOutView(widget.eventData));
                       },
                       child: Container(
                         height: 50,
@@ -500,37 +500,7 @@ int likes = 0;
               SizedBox(
                 height: 25,
               ),
-              InkWell(
-                onTap: () {
-                  Get.to(() => CheckOutView());
-                },
-                child: Container(
-                  height: 50,
-                  width: double.infinity,
-                  margin: EdgeInsets.only(bottom: 20),
-                  child: Center(
-                      child: Text(
-                    'subscribe',
-                    style: TextStyle(
-                      color: AppColors.blue,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  )),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.3),
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        offset: Offset(0, 1), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+           
             ],
           ),
         ),

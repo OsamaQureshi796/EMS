@@ -46,6 +46,7 @@ dependencies:
   cloud_firestore:
   dotted_border:
   video_thumbnail: ^0.5.0
+  flutter_stripe: ^3.1.0
 
 
 dev_dependencies:
