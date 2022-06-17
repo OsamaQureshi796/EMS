@@ -1,5 +1,9 @@
+import 'package:ems/controller/data_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
+import '../home/home_screen.dart';
+import '../profile/profile.dart';
 import 'create_event.dart';
 import 'message_screen.dart';
 
@@ -20,18 +24,21 @@ class _BottomBarViewState extends State<BottomBarView> {
   }
 
   List<Widget> widgetOption = [
+    HomeScreen(),
     const Center(
       child: Text('Under-Development'),
     ),
-    const Center(
-      child: Text('Under-Development'),
-    ),
-    const CreateEventView(),
+     CreateEventView(),
     MessageScreen(),
-    const Center(
-      child: Text('Under-Development'),
-    ),
+    ProfileScreen()
   ];
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Get.put(DataController(),permanent: true);
+  }
 
   @override
   Widget build(BuildContext context) {

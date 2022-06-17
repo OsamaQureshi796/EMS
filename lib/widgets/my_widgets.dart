@@ -14,6 +14,8 @@ Widget myText({text, style, textAlign}) {
   );
 }
 
+
+
 Widget textField({text,TextEditingController? controller,Function? validator,TextInputType inputType = TextInputType.text}) {
   return Container(
     height: 48,
@@ -210,6 +212,8 @@ Widget iconWithTitle({text, Function? func,bool? isShow = true}) {
     ],
   );
 }
+
+
 
 Widget iconTitleContainer({
   text,
