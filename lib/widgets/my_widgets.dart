@@ -292,6 +292,40 @@ Widget community1st({title, path, style}) {
         decoration:  BoxDecoration(
             shape: BoxShape.circle,
             image: DecorationImage(
+                image: AssetImage(path),
+                fit: BoxFit.fill
+            )
+        ),
+
+      ),
+      SizedBox(
+        width: 10,
+      ),
+      myText(text: title, style: style)
+    ],
+  );
+}
+
+Widget userProfile({title, path, style}) {
+  return Row(
+    children: [
+      path.toString().isEmpty?
+      Container(
+        width: 24,
+        height: 24,
+        decoration:  BoxDecoration(
+            shape: BoxShape.circle,
+            color: Colors.blue
+        ),
+        child: Icon(Icons.person,color: Colors.white,),
+
+      )
+          :Container(
+        width: 24,
+        height: 24,
+        decoration:  BoxDecoration(
+            shape: BoxShape.circle,
+            image: DecorationImage(
                 image: NetworkImage(path),
                 fit: BoxFit.fill
             )
@@ -305,6 +339,7 @@ Widget community1st({title, path, style}) {
     ],
   );
 }
+
 
 Widget completeCommunityWidget({
   imagePath,

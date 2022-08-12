@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:ems/controller/data_controller.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,50 +13,16 @@ class MessageScreen extends StatefulWidget {
 }
 
 class _MessageScreenState extends State<MessageScreen> {
-  List<Messagedetail> detail = [
-    Messagedetail(
-        image: 'assets/img.png',
-        name: 'Sara Smith',
-        desc: 'Good Morning 12h',
-        click: 'assets/img_8.png'),
-    Messagedetail(
-        image: 'assets/img_1.png',
-        name: 'Robert Pratrica',
-        desc: 'Good Morning 12h',
-        click: 'assets/img_8.png'),
-    Messagedetail(
-        image: 'assets/img_2.png',
-        name: 'kishori',
-        desc: 'Good Morning 12h',
-        click: 'assets/img_8.png'),
-    Messagedetail(
-        image: 'assets/img_3.png',
-        name: 'Manish Yadav',
-        desc: 'Good Morning 12h',
-        click: 'assets/img_8.png'),
-    Messagedetail(
-        image: 'assets/img_4.png',
-        name: 'Jagdeep samota',
-        desc: 'Good Morning 12h',
-        click: 'assets/img_8.png'),
-    Messagedetail(
-        image: 'assets/img_5.png',
-        name: 'Abhay Saroj',
-        desc: 'Good Morning 12h',
-        click: 'assets/img_8.png'),
-    Messagedetail(
-        image: 'assets/img_6.png',
-        name: 'Syed wamick',
-        desc: 'Good Morning 12h',
-        click: 'assets/img_8.png'),
-    Messagedetail(
-        image: 'assets/img_7.png',
-        name: 'John snow',
-        desc: 'Good Morning 12h',
-        click: 'assets/img_8.png'),
-  ];
+
+
+  DataController dataController = Get.find<DataController>();
+
+
+  String myUid = FirebaseAuth.instance.currentUser!.uid;
+
   @override
   Widget build(BuildContext context) {
+
     var screenheight = MediaQuery.of(context).size.height;
     var screenwidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -86,6 +55,32 @@ class _MessageScreenState extends State<MessageScreen> {
                       //decoration: BoxDecoration(borderRadius: BorderRadius.circular(10)),
                       child: TextFormField(
                         style: TextStyle(color: Colors.grey),
+                        onChanged: (String input){
+                          if(input.isEmpty){
+                            dataController.filteredUsers.assignAll(dataController.allUsers);
+                          }else{
+                           List<DocumentSnapshot> users =  dataController.allUsers.value.where((element) {
+                        String name;
+                               try{
+                        name = element.get('first') + ' '+ element.get('last');
+                      }catch(e){
+                        name = '';
+                      }
+
+
+                              return name.toLowerCase().contains(input.toLowerCase());
+                            }).toList();
+
+
+
+                          dataController.filteredUsers.value.assignAll(users);
+                          setState(() {
+                            
+                          });
+                          
+
+                          }
+                        },
                         decoration: InputDecoration(
                           errorBorder: InputBorder.none,
                           errorStyle: TextStyle(fontSize: 0, height: 0),
@@ -112,16 +107,53 @@ class _MessageScreenState extends State<MessageScreen> {
                 ),
               ),
               Container(
-                width: screenwidth * 0.9,
-                height: screenheight * 1,
-                child: ListView.builder(
+                padding: EdgeInsets.symmetric(horizontal: 15),
+                child: Obx(()=> ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
                     scrollDirection: Axis.vertical,
-                    itemCount: detail.length,
+                    itemCount: dataController.filteredUsers.length,
+                    shrinkWrap: true,
                     itemBuilder: (context, index) {
-                      return InkWell(
+
+
+                      String name = '', image = '';
+                      try{
+                        name = dataController.filteredUsers[index].get('first') + ' '+ dataController.filteredUsers[index].get('last');
+                      }catch(e){
+                        name = '';
+                      }
+
+                      try{
+                        image = dataController.filteredUsers[index].get('image');
+                      }catch(e){
+                        image = '';
+                      }
+
+
+                      String fcmToken = '';
+                       try{
+                        fcmToken = dataController.filteredUsers[index].get('fcmToken');
+                      }catch(e){
+                        fcmToken = '';
+                      }
+
+
+
+
+
+
+
+                      return dataController.filteredUsers[index].id == FirebaseAuth.instance.currentUser!.uid? Container() : InkWell(
                         onTap: () {
-                          Get.to(() => Chat());
+
+                          String chatRoomId = '';
+                          if(myUid.hashCode>dataController.filteredUsers[index].id.hashCode){
+                            chatRoomId = '$myUid-${dataController.filteredUsers[index].id}';
+                          }else{
+                            chatRoomId = '${dataController.filteredUsers[index].id}-$myUid';
+                          }
+
+                          Get.to(() => Chat(groupId: chatRoomId,name: name,image: image,fcmToken: fcmToken,uid: dataController.filteredUsers[index].id,));
                         },
                         child: Container(
                           margin: EdgeInsets.only(top: 20),
@@ -134,10 +166,9 @@ class _MessageScreenState extends State<MessageScreen> {
                           child: Row(
                             //  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Image(
-                                image: AssetImage('${detail[index].image}'),
-                                width: screenwidth * 0.1,
-                                height: screenheight * 0.1,
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(image),
+                                radius: 25,
                               ),
                               SizedBox(
                                 width: screenwidth * 0.06,
@@ -151,7 +182,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                       height: screenheight * 0.002,
                                     ),
                                     Text(
-                                      '${detail[index].name}',
+                                      name,
                                       style: TextStyle(
                                           fontSize: 15,
                                           fontWeight: FontWeight.bold),
@@ -161,7 +192,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.only(left: 0),
-                                      child: Text('${detail[index].desc}'),
+                                      child: Text(''),
                                     )
                                   ],
                                 ),
@@ -170,7 +201,7 @@ class _MessageScreenState extends State<MessageScreen> {
                                 width: screenwidth * 0.05,
                               ),
                               Image(
-                                image: AssetImage('${detail[index].click}'),
+                                image: AssetImage('assets/img_8.png'),
                                 width: screenwidth * 0.1,
                                 height: screenheight * 0.1,
                               ),
@@ -179,7 +210,7 @@ class _MessageScreenState extends State<MessageScreen> {
                         ),
                       );
                     }),
-              ),
+              )),
             ],
           ),
         ),

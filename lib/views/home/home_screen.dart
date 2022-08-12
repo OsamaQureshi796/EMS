@@ -1,4 +1,5 @@
 import 'package:ems/controller/data_controller.dart';
+import 'package:ems/services/notification_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 
-                CustomAppBar(),
+               CustomAppBar(),
                 
                 Text(
                   "What Going on today",

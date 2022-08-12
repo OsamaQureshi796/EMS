@@ -17,11 +17,43 @@ class DataController extends GetxController{
 
 
   var allUsers  = <DocumentSnapshot>[].obs;
+  var filteredUsers = <DocumentSnapshot>[].obs;
   var allEvents = <DocumentSnapshot>[].obs;
-
+  var filteredEvents = <DocumentSnapshot>[].obs;
   var joinedEvents = <DocumentSnapshot>[].obs;
 
   var isEventsLoading = false.obs;
+
+
+  var isMessageSending = false.obs;
+  sendMessageToFirebase({
+    Map<String,dynamic>? data,
+    String? lastMessage,
+    String? grouid
+  })async{
+
+   isMessageSending(true);
+
+    await FirebaseFirestore.instance.collection('chats').doc(grouid).collection('chatroom').add(data!);
+    await FirebaseFirestore.instance.collection('chats').doc(grouid).set({
+      'lastMessage': lastMessage,
+      'groupId': grouid,
+      'group': grouid!.split('-'),
+    },SetOptions(merge: true));
+
+    isMessageSending(false);
+
+  }
+
+
+  createNotification(String recUid){
+    FirebaseFirestore.instance.collection('notifications').doc(recUid).collection('myNotifications').add({
+      'message': "Send you a message.",
+      'image': myDocument!.get('image'),
+      'name': myDocument!.get('first')+ " "+ myDocument!.get('last'),
+      'time': DateTime.now()
+    });
+  }
 
   getMyDocument(){
     FirebaseFirestore.instance.collection('users').doc(auth.currentUser!.uid)
@@ -92,6 +124,7 @@ class DataController extends GetxController{
     isUsersLoading(true);
     FirebaseFirestore.instance.collection('users').snapshots().listen((event) {
       allUsers.value = event.docs;
+      filteredUsers.value.assignAll(allUsers);
       isUsersLoading(false);
      });
   }
@@ -102,7 +135,7 @@ class DataController extends GetxController{
 
     FirebaseFirestore.instance.collection('events').snapshots().listen((event) {
       allEvents.assignAll(event.docs);
-
+      filteredEvents.assignAll(event.docs);
 
 
     joinedEvents.value =   allEvents.where((e){

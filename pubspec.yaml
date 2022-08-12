@@ -47,6 +47,10 @@ dependencies:
   dotted_border:
   video_thumbnail: ^0.5.0
   flutter_stripe: ^3.1.0
+  emoji_picker_flutter: 1.0.8
+  firebase_messaging: ^11.2.5
+  flutter_local_notifications: ^9.2.0
+  timeago:
 
 
 dev_dependencies:

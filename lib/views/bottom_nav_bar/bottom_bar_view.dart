@@ -1,7 +1,10 @@
 import 'package:ems/controller/data_controller.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../services/notification_service.dart';
+import '../community/community.dart';
 import '../home/home_screen.dart';
 import '../profile/profile.dart';
 import 'create_event.dart';
@@ -25,9 +28,7 @@ class _BottomBarViewState extends State<BottomBarView> {
 
   List<Widget> widgetOption = [
     HomeScreen(),
-    const Center(
-      child: Text('Under-Development'),
-    ),
+    CommunityScreen(),
      CreateEventView(),
     MessageScreen(),
     ProfileScreen()
@@ -38,7 +39,17 @@ class _BottomBarViewState extends State<BottomBarView> {
     // TODO: implement initState
     super.initState();
     Get.put(DataController(),permanent: true);
+        FirebaseMessaging.instance.getInitialMessage();
+    FirebaseMessaging.onMessage.listen((message) {
+      
+      LocalNotificationService.display(message);
+    });
+
+  LocalNotificationService.storeToken();
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
